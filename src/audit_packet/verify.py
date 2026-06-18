@@ -63,6 +63,28 @@ _EMBEDDED_TEST_FILES = (
 _REENTRY_ENV = "AUDIT_PACKET_EMBEDDED_RUN"
 
 
+def exit_code_for(report, suite_rc: int) -> int:
+    """Pure exit-code mapping -- the single piece of logic a CI consumer trusts.
+
+    Kept as a standalone pure function (no I/O, no main()) so the embedded
+    regression suite can assert it directly WITHOUT re-running the driver or
+    re-entering pytest. ``main()`` calls this; the contract is unchanged:
+
+      report.all_pass is False  -> 2 (a probe regressed; the governed path ALLOWed)
+      suite_rc != 0             -> 3 (an embedded test failed)
+      otherwise                 -> 0 (the control holds and the suite is green)
+
+    Probe regression takes precedence over a suite failure: a regressed control
+    is the more severe, fail-closed signal. (Vendor drift -> 4 and empty run -> 5
+    are decided earlier in ``main()`` before this mapping is reached.)
+    """
+    if not report.all_pass:
+        return EXIT_PROBE_REGRESSED
+    if suite_rc != 0:
+        return EXIT_TEST_FAILED
+    return EXIT_OK
+
+
 def _check_vendor_integrity() -> bool:
     """Recompute the SHA-256 of each vendored file and match VENDOR.md. Returns
     True if all digests match, False on any drift or missing record."""
@@ -171,12 +193,8 @@ def main(argv: list[str] | None = None) -> int:
         # 5. Embedded regression suite (degrades if pytest absent).
         test_rc = _run_embedded_tests()
 
-        # 6. Decide the exit code.
-        if not report.all_pass:
-            return EXIT_PROBE_REGRESSED
-        if test_rc != 0:
-            return EXIT_TEST_FAILED
-        return EXIT_OK
+        # 6. Decide the exit code (pure mapping; self-checked by the embedded suite).
+        return exit_code_for(report, test_rc)
     except ValueError:
         # Empty run / internal evidence guard.
         print("INTERNAL: no probes produced a result; cannot render a verdict.")

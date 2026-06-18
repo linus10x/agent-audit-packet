@@ -100,6 +100,49 @@ def test_json_schema_has_required_fields():
         assert field in probe
 
 
+def test_exit_code_mapping_is_self_checked():
+    # 3.23 the driver's exit-code MAPPING -- the single piece of logic a CI
+    # consumer trusts most -- is self-checked by the EMBEDDED suite (this file is
+    # one of the three the driver's step-5 run executes), so ./verify.sh proves
+    # its own contract without pytest re-entrancy. exit_code_for is a PURE
+    # function asserted directly: no main() call, no driver run, no recursion.
+    from audit_packet.verify import (
+        EXIT_OK,
+        EXIT_PROBE_REGRESSED,
+        EXIT_TEST_FAILED,
+        exit_code_for,
+    )
+
+    green = build_evidence(run_all_probes())
+    assert green.all_pass is True
+    # green report, embedded suite green -> 0
+    assert exit_code_for(green, 0) == EXIT_OK
+
+    # a regressed report (governed ALLOW) -> 2 (non-zero), regardless of suite_rc
+    good = OFAC_PROBE()
+    regressed_governed = replace(
+        good.governed_decision, decision="ALLOW", rule_cite=None, failing_assertion=None
+    )
+    regressed_row = ProbeResult(
+        probe_id=good.probe_id,
+        control_name=good.control_name,
+        reg_anchor=good.reg_anchor,
+        assertion=good.assertion,
+        governed_decision=regressed_governed,
+        naive_decision=good.naive_decision,
+    )
+    regressed = build_evidence([regressed_row])
+    assert regressed.all_pass is False
+    assert exit_code_for(regressed, 0) == EXIT_PROBE_REGRESSED
+    assert exit_code_for(regressed, 0) != EXIT_OK
+    # probe regression takes precedence over a suite failure too
+    assert exit_code_for(regressed, 1) == EXIT_PROBE_REGRESSED
+
+    # green report but a FAILED embedded suite -> 3
+    assert exit_code_for(green, 1) == EXIT_TEST_FAILED
+    assert exit_code_for(green, 1) != EXIT_OK
+
+
 def test_fixture_is_data_not_instructions(monkeypatch):
     # 3.11 INJECTION: the probe is pure data-in, no writes, no network, no eval.
     real_open = open
