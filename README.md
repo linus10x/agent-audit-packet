@@ -4,9 +4,9 @@ A forwardable OFAC audit packet. Clone one repo, run one command, and get
 reviewer-readable evidence that an under-governed payments agent FAILS a
 regulated OFAC control and a governed agent PASSES it, with a CI-grade exit code.
 
-This is a go-to-market wrapper around an already-proven control
+This is a wrapper around the agent-funds-gate control
 (`agent-funds-gate`, vendored under `vendor/`). It is not a new control and not a
-generic agent framework. We attacked our own gate and showed it holds.
+generic agent framework. I tested the gate against the race it is meant to stop, and it denies it.
 
 ## The one command
 
@@ -56,7 +56,7 @@ its `naive_mode` defeat; `ScreenResult`, `ScreenStatus`, `GateDecision`, the
 packet writes zero gate logic and imports the real public surface. See
 `vendor/VENDOR.md` for the pinned commit and per-file digests.
 
-ADDS (the moat): a CI-grade driver with a deterministic multi-code exit contract
+ADDS: a CI-grade driver with a deterministic multi-code exit contract
 and an embedded regression suite; a second-line evidence layer (a reviewer table
 plus a forwardable `evidence.json`) structured as an independent-review function
 would record it; a probe registry built for extension (ECOA and SR 11-7 are named
@@ -66,7 +66,7 @@ vendoring.
 
 The split: `agent-funds-gate` proves the control; `agent-audit-packet` makes that
 proof forwardable, runnable in one command by a non-author reviewer, and emits
-independent-review-grade evidence with a CI exit code.
+evidence with a CI exit code.
 
 ## Scope limits
 
