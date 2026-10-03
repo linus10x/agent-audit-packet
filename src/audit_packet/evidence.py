@@ -1,4 +1,4 @@
-"""Second-line, independent-review-grade evidence.
+"""Reviewer-readable evidence for a second-line review.
 
 Turns probe results into a reviewer-readable plain-ASCII table and a forwardable
 machine-readable JSON artifact. Every cell is read from a ``ProbeResult``; the

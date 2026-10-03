@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "agent-audit-packet"
 version = "0.1.0"
-description = "Forwardable, one-command OFAC audit packet wrapping the proven agent-funds-gate control."
+description = "Forwardable, one-command OFAC audit packet wrapping the agent-funds-gate control."
 requires-python = ">=3.11"
 dependencies = []
 
