@@ -2,9 +2,7 @@
 
 Run: ``python3 -m audit_packet.verify`` (or ``./verify.sh``).
 
-The framing law in all output is "we attacked our own gate," never "caught a
-real incident": the defeat is shown first (the under-governed agent ALLOWs the
-race), the control second (the governed gate DENYs it).
+Output never claims the gate caught a real incident.
 
 Exit-code contract:
   0  every probe PASS and the embedded suite green (the control holds)
@@ -154,7 +152,7 @@ def main(argv: list[str] | None = None) -> int:
 
         # 3. Defeat-first narrative, then the table.
         ofac = results[0]
-        print("agent-audit-packet -- we attacked our own gate and showed it holds.")
+        print("agent-audit-packet -- each staged unsafe ordering is denied.")
         print()
         print(
             "[defeat] The under-governed agent (ordering check stripped) returns "

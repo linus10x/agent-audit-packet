@@ -3,7 +3,7 @@
 A go-to-market wrapper around the proven, vendored ``agent_funds_gate`` control.
 It writes no gate logic: it runs the documented screen-completes-after-transfer
 race through both a governed and an under-governed gate, and emits
-independent-review-grade evidence with a CI-grade exit code.
+reviewer-readable evidence with a CI-grade exit code.
 """
 
 from .evidence import EvidenceReport, build_evidence, render_json, render_table
