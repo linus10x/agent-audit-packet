@@ -7,7 +7,7 @@ writes zero gate logic of its own.
 ## Provenance
 
 - Upstream repo: `agent-funds-gate` (local repo at `~/agent-funds-gate`, branch `main`, no remote).
-- Pinned commit: `19354ac0d086234eda3ace14383dadf1681431c5`
+- Pinned commit: `1441a7c00ecb333f525a56d9ac9b54d6416e2b6a`
 - License: MIT. This is reused upstream IP; the packet does not re-own or re-license the control.
 
 Only the four runtime source files are vendored. Upstream `tests/`, `demo/`,
